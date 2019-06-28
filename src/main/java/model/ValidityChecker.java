@@ -1,6 +1,4 @@
-package main.java.model;
-
-import java.io.File;
+package model;
 
 public class ValidityChecker {
     public static boolean isGoodPassword(String password) {

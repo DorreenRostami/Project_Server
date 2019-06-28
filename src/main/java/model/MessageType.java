@@ -1,4 +1,4 @@
-package main.java.model;
+package model;
 
 import java.io.Serializable;
 
@@ -24,7 +24,7 @@ public enum MessageType implements Serializable {
      */
     signUp,
     /**
-     * when user wants to upload a picture as a profile picture
+     * when user is done adding additional info
      */
-    picture
+    makeAccount
 }

@@ -1,4 +1,4 @@
-package main.java.model;
+package model;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -7,15 +7,16 @@ import java.util.List;
 
 public class User implements Serializable, Person {
     private static final long serialVersionUID = 1L;
-    private static final String IMAGE_ROOT = "/main/resources/users/";
 
     //personal info
     private String username;
     private String password;
+    private byte[] image = null;
     private String name;
     private String surname;
     private String birthday;
-    private byte[] image = null;
+    private Gender gender;
+    private String mobile;
 
     //messaging info
     private List<User> blockedUsers = null;
@@ -30,9 +31,8 @@ public class User implements Serializable, Person {
         this(username, password);
         this.name = name;
         this.surname = surname;
-        this.setBirthday(birthday);
+        this.birthday = birthday;
     }
-
 
     public String getUsername() {
         return username;
@@ -71,13 +71,41 @@ public class User implements Serializable, Person {
     }
 
     @Override
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    @Override
     public String getBirthday() {
         return birthday;
     }
 
     @Override
-    public void setBirthday(String birthday) {
-        this.birthday = birthday;
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    @Override
+    public Gender getGender() {
+        return gender;
+    }
+
+    @Override
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    @Override
+    public String getMobile() {
+        return mobile;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 
     @Override
@@ -91,13 +119,5 @@ public class User implements Serializable, Person {
     @Override
     public int hashCode() {
         return username.hashCode();
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
     }
 }

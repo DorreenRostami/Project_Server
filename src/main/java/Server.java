@@ -1,7 +1,5 @@
-package main.java;
-
-import main.java.model.Email;
-import main.java.model.ServerMessage;
+import model.Email;
+import model.ServerMessage;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -55,18 +53,11 @@ class ServerRunner implements Runnable {
                     new ObjectInputStream(socket.getInputStream()));
 
             clientRequest = serverHandler.getInputStream().readObject();
-            System.out.println("read");
-            if (clientRequest instanceof String){
-                serverHandler.handleImage(socket, (String) clientRequest);
-            }
-            else if (clientRequest instanceof ServerMessage) {
+            if (clientRequest instanceof ServerMessage) {
                 serverHandler.handle((ServerMessage) clientRequest);
             }
             else if (clientRequest instanceof Email){
                 serverHandler.handle((Email) clientRequest);
-            }
-            else if (clientRequest instanceof File) {
-                //TO DO
             }
         }
         catch (IOException | ClassNotFoundException ignored) {

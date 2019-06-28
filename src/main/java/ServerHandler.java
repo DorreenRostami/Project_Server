@@ -1,6 +1,5 @@
-package main.java;
 
-import main.java.model.*;
+import model.*;
 
 import java.io.*;
 import java.net.Socket;
@@ -9,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class ServerHandler {
+    private static final String DB = "src/main/resources/users/";
     private Socket socket;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
@@ -28,7 +28,7 @@ public class ServerHandler {
     }
 
 
-    void handle(ServerMessage message) throws IOException {
+    void handle(ServerMessage message) throws IOException, ClassNotFoundException {
         User newUser = message.getUser();
         switch (message.getMessageType()) {
             case signUp:
@@ -82,24 +82,16 @@ public class ServerHandler {
                 if (newUser.getUsername().length() == 0) {
                     outputStream.writeObject(SignUpFeedback.enterUsername);
                     outputStream.flush();
-                    error = true;
                 }
                 else {
                     if (!ValidityChecker.isGoodUsername(newUser.getUsername())) {
                         outputStream.writeObject(SignUpFeedback.badUsername);
                         outputStream.flush();
-                        error = true;
                     }
                     else if (!error) {
-                        File file = new File("src/main/resources/users/" + newUser.getUsername());
-                        if (file.mkdir()) {
-                            ObjectOutputStream ous = new ObjectOutputStream(
-                                    new FileOutputStream(file.getPath() + "/info.txt"));
-                            ous.writeObject(newUser);
-                            ous.flush();
-                            ous.close();
+                        File file = new File(DB + newUser.getUsername());
+                        if (!file.exists())
                             outputStream.writeObject(SignUpFeedback.signedUp);
-                        }
                         else
                             outputStream.writeObject(SignUpFeedback.takenUsername);
                         outputStream.flush();
@@ -108,55 +100,44 @@ public class ServerHandler {
                 break;
 
             case signIn:
+                String accountPath = DB + newUser.getUsername();
+                File account = new File(accountPath);
+                if (account.exists()) {
+                    account = new File(account + "/info.txt");
+                    ObjectInputStream ois = new ObjectInputStream(new FileInputStream(account));
+                    User user = (User) ois.readObject();
+                    outputStream.writeObject(user);
+                }
+                else
+                    outputStream.writeObject(null);
+                break;
+
+            case makeAccount:
+                saveUser(message.getUser());
                 break;
         }
         outputStream.flush();
+        close();
     }
 
     void handle (Email email) {
         //TO DO
     }
 
-    void handleImage(Socket socket, String username) {
-        try {
-            new DBThread(socket, username).start();
-        }
-        catch (IOException e) {
-            e.getMessage();
-        }
-    }
-}
+    private void saveUser(User user) throws IOException {
+        String path = DB + user.getUsername() + "/info.txt";
+        File folder = new File(DB + user.getUsername());
+        folder.mkdir();
 
-class DBThread extends Thread {
-    private static final String DB = "src/main/resources/users/";
-    private Socket socket;
-    private DataInputStream in;
-    private String username;
-
-    public DBThread(Socket socket, String username) throws IOException {
-        this.socket = socket;
-        in = new DataInputStream(socket.getInputStream());
-        this.username = username;
+        ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(path));
+        ous.writeObject(user);
+        ous.flush();
+        ous.close();
     }
 
-    @Override
-    public void run() {
-        try {
-            byte[] buffer = in.readAllBytes();
-            File userFile = new File(DB + username + "/info.txt");
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(userFile));
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(userFile));
-            User user = (User) ois.readObject();
-            user.setImage(buffer);
-            oos.writeObject(user);
-
-            ois.close();
-            oos.close();
-            in.close();
-            socket.close();
-        }
-        catch (IOException | ClassNotFoundException e) {
-            e.getMessage();
-        }
+    private void close() throws IOException {
+        inputStream.close();
+        outputStream.close();
+        socket.close();
     }
 }

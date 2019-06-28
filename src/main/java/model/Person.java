@@ -1,4 +1,4 @@
-package main.java.model;
+package model;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -14,8 +14,12 @@ public interface Person extends Serializable {
     String getSurname();
     void setBirthday(String str);
     String getBirthday();
+    void setGender(Gender gender);
+    Gender getGender();
+    void setMobile(String mobile);
+    String getMobile();
 
-    default public int getAge(String birthday) throws ParseException {
+    default int getAge(String birthday) throws ParseException {
         long yearMilliSeconds = 1000L * 365 * 24 * 60 * 60;
         long currentYear = new Date().getTime() / yearMilliSeconds;
         Date birthDate = new SimpleDateFormat("dd/MM/yyyy").parse(birthday);
