@@ -8,14 +8,6 @@ public enum MessageType implements Serializable {
      */
     signIn,
     /**
-     * the message type when an email is first composed
-     */
-    message,
-    /**
-     * the message type when an email is replied to/is a reply
-     */
-    conversation,
-    /**
      * when user signs out
      */
     signOut,
@@ -26,5 +18,13 @@ public enum MessageType implements Serializable {
     /**
      * when user is done adding additional info
      */
-    makeAccount
+    makeAccount,
+    /**
+     * when user wants to view their inbox
+     */
+    inbox,
+    /**
+     * when user wants to view the messages they have sent
+     */
+    sent
 }

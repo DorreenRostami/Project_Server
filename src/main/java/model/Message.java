@@ -5,13 +5,22 @@ import java.io.Serializable;
 public abstract class Message implements Serializable {
     static final long serialVersionUID = 2L;
 
-    MessageType messageType;
+    String text;
+    User sender;
 
-    public MessageType getMessageType() {
-        return messageType;
+    public String getText() {
+        return text;
     }
 
-    public void setMessageType(MessageType messageType) {
-        this.messageType = messageType;
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public User getSender() {
+        return sender;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
     }
 }
