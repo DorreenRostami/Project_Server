@@ -1,3 +1,4 @@
+import model.Conversation;
 import model.Email;
 import model.ServerMessage;
 
@@ -56,8 +57,8 @@ class ServerRunner implements Runnable {
             if (clientRequest instanceof ServerMessage) {
                 serverHandler.handle((ServerMessage) clientRequest);
             }
-            else if (clientRequest instanceof Email){
-                serverHandler.handle((Email) clientRequest);
+            else if (clientRequest instanceof Conversation){
+                serverHandler.handle((Conversation) clientRequest);
             }
         }
         catch (IOException | ClassNotFoundException ignored) {

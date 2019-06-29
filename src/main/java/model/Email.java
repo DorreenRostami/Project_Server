@@ -57,16 +57,23 @@ public class Email extends Message implements Serializable {
         this.imp = imp;
     }
 
+    /**
+     * equals method to check if two emails are equal.
+     * since a user can't send two emails at the exact same time checking
+     * the equivalence of the time and sender of two emails will be sufficient.
+     * @param o another object which will be either equal or not to this email
+     * @return true if the sender of time of sending the two emails are the same
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Email e = (Email) o;
-        return sender.equals(e.getSender()) && subject.equals(e.getSubject());
+        return time.equals(e.getTime()) && sender.equals(e.getSender());
     }
 
     @Override
     public int hashCode() {
-        return subject.hashCode() + sender.hashCode();
+        return time.hashCode() + sender.hashCode();
     }
 }

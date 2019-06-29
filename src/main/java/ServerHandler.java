@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class ServerHandler {
     private static final String DB = "src/main/resources/users/";
@@ -29,7 +30,7 @@ public class ServerHandler {
 
 
     void handle(ServerMessage message) throws IOException, ClassNotFoundException {
-        User newUser = message.getUser();
+        User newUser = message.getSender();
         switch (message.getMessageType()) {
             case signUp:
                 outputStream.reset();
@@ -71,7 +72,7 @@ public class ServerHandler {
                         outputStream.flush();
                         error = true;
                     }
-                    if (!newUser.getPassword().equals(message.getPass2())) {
+                    if (!newUser.getPassword().equals(message.getText())) {
                         outputStream.writeObject(SignUpFeedback.mismatchedPass);
                         outputStream.flush();
                         error = true;
@@ -103,7 +104,7 @@ public class ServerHandler {
                 String accountPath = DB + newUser.getUsername();
                 File account = new File(accountPath);
                 if (account.exists()) {
-                    account = new File(account + "/info.txt");
+                    account = new File(account + "/Info.txt");
                     ObjectInputStream ois = new ObjectInputStream(new FileInputStream(account));
                     User user = (User) ois.readObject();
                     outputStream.writeObject(user);
@@ -113,26 +114,56 @@ public class ServerHandler {
                 break;
 
             case makeAccount:
-                saveUser(message.getUser());
+                FileUpdate.saveUser(message.getSender());
+                break;
+
+            case inbox:
+            case sent:
+                outputStream.writeObject(FileUpdate.getMail(message));
                 break;
         }
         outputStream.flush();
         close();
     }
 
-    void handle (Email email) {
-        //TO DO
-    }
+    void handle (Conversation conversation) throws IOException, ClassNotFoundException {
+        int convoSize = conversation.getMessages().size();
+        Email email = conversation.getMessages().get(convoSize - 1);
+        String receiver = email.getReceiver();
+        String sender = email.getSender().getUsername();
 
-    private void saveUser(User user) throws IOException {
-        String path = DB + user.getUsername() + "/info.txt";
-        File folder = new File(DB + user.getUsername());
-        folder.mkdir();
-
-        ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(path));
-        ous.writeObject(user);
-        ous.flush();
-        ous.close();
+        File receiverFile = new File(DB + receiver);
+        if (receiverFile.exists()) {
+            receiverFile = new File(DB + receiver + "/Inbox.txt");
+            FileUpdate.updateMail(receiverFile, conversation);
+            if (convoSize != 1) {
+                List<Email> messages = conversation.getMessages();
+                boolean recieverSentUpdated = false;
+                boolean senderInboxUpdated = false;
+                for (Email e : messages) {
+                    if (!recieverSentUpdated && receiver.equals(e.getSender().getUsername())) {
+                        receiverFile = new File(DB + receiver + "/Sent.txt");
+                        FileUpdate.updateMail(receiverFile, conversation);
+                        recieverSentUpdated = true;
+                    }
+                    if (!senderInboxUpdated && sender.equals(e.getReceiver())) {
+                        File senderFile = new File(DB + sender + "/Inbox.txt");
+                        FileUpdate.updateMail(senderFile, conversation);
+                        senderInboxUpdated = true;
+                    }
+                    if (recieverSentUpdated && senderInboxUpdated)
+                        break;
+                }
+            }
+        }
+        else {
+            File senderFile = new File(DB + sender + "/Inbox.txt");
+            email = new Email(new User("mailerdaemon", ""), sender, "Error sending email",
+                    "User " + receiver +"@googlemail.com doesn't exist", null);
+            FileUpdate.updateMail(senderFile, new Conversation(email));
+        }
+        File senderFile = new File(DB + sender + "/Sent.txt");
+        FileUpdate.updateMail(senderFile, conversation);
     }
 
     private void close() throws IOException {

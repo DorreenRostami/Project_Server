@@ -16,7 +16,7 @@ public class FileUpdate {
         }
 
         //serialize updated user into file
-        ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(path + "/info.txt"));
+        ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(path + "/Info.txt"));
         ous.writeObject(user);
         ous.flush();
         ous.close();
@@ -28,5 +28,23 @@ public class FileUpdate {
         List<Conversation> list = (List<Conversation>) ois.readObject();
         ois.close();
         return list;
+    }
+
+    public static void updateMail(File file, Conversation conversation) throws IOException, ClassNotFoundException {
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+        List<Conversation> conversations = (List<Conversation>) ois.readObject();
+        for (int i = 0; i < conversations.size(); i++) {
+            if (conversation.equals(conversations.get(i))) {
+                conversations.set(i, conversation);
+                break;
+            }
+            else if (i == conversations.size() - 1)
+                conversations.add(conversation);
+        }
+        oos.writeObject(conversations);
+        oos.flush();
+        ois.close();
+        oos.close();
     }
 }

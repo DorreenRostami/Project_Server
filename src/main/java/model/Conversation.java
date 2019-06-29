@@ -1,55 +1,62 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Conversation implements Serializable {
+public class Conversation extends Message implements Serializable {
     private static final long serialVersionUID = 3L;
 
-    private User starter;
-    private Email last;
-    private List<Email> messages;
+    private List<Email> messages = new ArrayList<>();
 
-    public Conversation(User starter, Email last, List<Email> messages) {
-        this.starter = starter;
-        this.last = last;
-        this.messages = messages;
+    public Conversation(Email first) {
+        this.sender = first.getSender();
+        messages.add(first);
     }
 
-    public User getStarter() {
-        return starter;
-    }
-
-    public Email getLast() {
-        return last;
-    }
-
-    public void setLast(Email last) {
-        this.last = last;
+    @Override
+    public User getSender() {
+        return sender;
     }
 
     public List<Email> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<Email> messages) {
-        this.messages = messages;
-    }
-
     public void addMessage(Email email) {
         messages.add(email);
     }
 
+    public String getTime() {
+        return messages.get(messages.size() - 1).getTime();
+    }
+
+    @Override
+    public String getText() {
+        Email last = messages.get(messages.size() - 1);
+        return last.getSubject() + " - " + last.getText();
+    }
+
+    /**
+     * equals method to check if two conversations are equal.
+     * since two emails are equal if and only if their sender and time sent are the same,
+     * and since a conversation is created when the first email is sent, if the first
+     * emails in two conversations are equal, we come to the conclusion that the
+     * two conversations are equal.
+     * @param o another object which will be either equal or not to this conversation
+     * @return true if the first email in two conversations are equal
+     * @see Email#equals(Object)
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Conversation c = (Conversation) o;
-        return starter.equals(c.getStarter()) && last.equals(c.getLast());
+        return this.getMessages().get(0).equals(c.getMessages().get(0));
     }
 
     @Override
     public int hashCode() {
-        return starter.hashCode() + last.hashCode();
+        return sender.hashCode() + messages.hashCode();
     }
 }
