@@ -3,6 +3,7 @@ package model;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class Email extends Message implements Serializable {
     private static final long serialVersionUID = 2L;
@@ -10,18 +11,18 @@ public class Email extends Message implements Serializable {
     private String receiver;
     private String time;
     private String subject = "No Subject";
-    private byte[] fileBytes;
+    private List<FileInfo> filesInfos = null;
     private boolean read = false;
     private boolean imp = false;
 
-    public Email(User sender, String receiver, String subject, String text, byte[] fileBytes) {
+    public Email(User sender, String receiver, String subject, String text, List<FileInfo> filesInfos) {
         this.sender = sender;
         this.text = text;
         this.receiver = receiver;
         if (subject.length() > 0)
             this.subject = subject;
-        if (fileBytes.length > 0)
-            this.fileBytes = fileBytes;
+        if (filesInfos != null && filesInfos.size() > 0)
+            this.filesInfos = filesInfos;
         this.time = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date());
     }
 
@@ -37,8 +38,8 @@ public class Email extends Message implements Serializable {
         return subject;
     }
 
-    public byte[] getFileBytes() {
-        return fileBytes;
+    public List<FileInfo> getFilesInfos() {
+        return filesInfos;
     }
 
     public boolean isRead() {
@@ -59,7 +60,7 @@ public class Email extends Message implements Serializable {
 
     /**
      * equals method to check if two emails are equal.
-     * since a user can't send two emails at the exact same time checking
+     * since a user can't sendComposed two emails at the exact same time checking
      * the equivalence of the time and sender of two emails will be sufficient.
      * @param o another object which will be either equal or not to this email
      * @return true if the sender of time of sending the two emails are the same

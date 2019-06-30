@@ -1,6 +1,7 @@
 package model;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileUpdate {
@@ -33,14 +34,21 @@ public class FileUpdate {
     public static void updateMail(File file, Conversation conversation) throws IOException, ClassNotFoundException {
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-        List<Conversation> conversations = (List<Conversation>) ois.readObject();
-        for (int i = 0; i < conversations.size(); i++) {
-            if (conversation.equals(conversations.get(i))) {
-                conversations.set(i, conversation);
-                break;
+        Object listObject = ois.readObject();
+        List<Conversation> conversations = new ArrayList<>();
+        if (listObject != null) {
+            conversations = (List<Conversation>) listObject;
+            for (int i = 0; i < conversations.size(); i++) {
+                if (conversation.equals(conversations.get(i))) {
+                    conversations.set(i, conversation);
+                    break;
+                }
+                else if (i == conversations.size() - 1)
+                    conversations.add(conversation);
             }
-            else if (i == conversations.size() - 1)
-                conversations.add(conversation);
+        }
+        else {
+            conversations.add(conversation);
         }
         oos.writeObject(conversations);
         oos.flush();
