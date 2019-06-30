@@ -1,6 +1,7 @@
 import model.Conversation;
 import model.Email;
 import model.ServerMessage;
+import model.User;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -56,9 +57,6 @@ class ServerRunner implements Runnable {
             clientRequest = serverHandler.getInputStream().readObject();
             if (clientRequest instanceof ServerMessage) {
                 serverHandler.handle((ServerMessage) clientRequest);
-            }
-            else if (clientRequest instanceof Conversation){
-                serverHandler.handle((Conversation) clientRequest);
             }
         }
         catch (IOException | ClassNotFoundException ignored) {

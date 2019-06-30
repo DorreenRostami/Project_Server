@@ -1,6 +1,6 @@
 package model;
 
-public enum SignUpFeedback {
+public enum InfoFeedback {
     /**
      * when the user hasn't entered their full name
      */
@@ -40,5 +40,9 @@ public enum SignUpFeedback {
     /**
      * when there were no errors and the user has successfully signed up
      */
-    signedUp
+    signedUp,
+    /**
+     * when user's account information was successfully changed
+     */
+    changed
 }

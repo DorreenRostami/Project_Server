@@ -2,7 +2,6 @@ package model;
 
 import java.io.Serializable;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class User implements Serializable, Person {
@@ -20,7 +19,6 @@ public class User implements Serializable, Person {
 
     //messaging info
     private List<User> blockedUsers = null;
-    private List<Email> messages = new ArrayList<>();
 
     public User(String username, String password) {
         this.username = username;

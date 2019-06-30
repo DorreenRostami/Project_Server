@@ -3,9 +3,6 @@ import model.*;
 
 import java.io.*;
 import java.net.Socket;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ServerHandler {
@@ -20,11 +17,11 @@ public class ServerHandler {
         this.inputStream = inputStream;
     }
 
-    public ObjectInputStream getInputStream() {
+    ObjectInputStream getInputStream() {
         return inputStream;
     }
 
-    public ObjectOutputStream getOutputStream() {
+    ObjectOutputStream getOutputStream() {
         return outputStream;
     }
 
@@ -34,70 +31,7 @@ public class ServerHandler {
         switch (message.getMessageType()) {
             case signUp:
                 outputStream.reset();
-                boolean error = false;
-
-                //check if user has entered their full name
-                if (newUser.getName().length() == 0 || newUser.getSurname().length() == 0) {
-                    outputStream.writeObject(SignUpFeedback.fullName);
-                    outputStream.flush();
-                    error = true;
-                }
-
-                //check if birthday is valid
-                try {
-                    DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-                    df.setLenient(false);
-                    df.parse(newUser.getBirthday());
-                    if(newUser.getAge(newUser.getBirthday()) < 13) {
-                        outputStream.writeObject(SignUpFeedback.young);
-                        outputStream.flush();
-                        error = true;
-                    }
-                }
-                catch (ParseException e) {
-                    outputStream.writeObject(SignUpFeedback.birthday);
-                    outputStream.flush();
-                    error = true;
-                }
-
-                //check if password is valid
-                if (newUser.getPassword().length() < 8) {
-                    outputStream.writeObject(SignUpFeedback.shortPass);
-                    outputStream.flush();
-                    error = true;
-                }
-                else {
-                    if (!ValidityChecker.isGoodPassword(newUser.getPassword())) {
-                        outputStream.writeObject(SignUpFeedback.badPass);
-                        outputStream.flush();
-                        error = true;
-                    }
-                    if (!newUser.getPassword().equals(message.getText())) {
-                        outputStream.writeObject(SignUpFeedback.mismatchedPass);
-                        outputStream.flush();
-                        error = true;
-                    }
-                }
-
-                //check if username is valid
-                if (newUser.getUsername().length() == 0) {
-                    outputStream.writeObject(SignUpFeedback.enterUsername);
-                    outputStream.flush();
-                }
-                else {
-                    if (!ValidityChecker.isGoodUsername(newUser.getUsername())) {
-                        outputStream.writeObject(SignUpFeedback.badUsername);
-                        outputStream.flush();
-                    }
-                    else if (!error) {
-                        File file = new File(DB + newUser.getUsername());
-                        if (!file.exists())
-                            outputStream.writeObject(SignUpFeedback.signedUp);
-                        else
-                            outputStream.writeObject(SignUpFeedback.takenUsername);
-                        outputStream.flush();
-                    }
-                }
+                new InfoChecker(outputStream).signUpInfo(message);
                 break;
 
             case signIn:
@@ -121,12 +55,34 @@ public class ServerHandler {
             case sent:
                 outputStream.writeObject(FileUpdate.getMail(message));
                 break;
+
+            case change:
+                new InfoChecker(outputStream).changeInfo(message);
+                break;
+
+            case send:
+                handle(message.getConversation());
+                break;
+
+            case deleteConversation:
+                String path = DB + message.getSender().getUsername() + "/Inbox.txt";
+                FileUpdate.deleteConversation(new File(path), message.getConversation());
+                path = DB + message.getSender().getUsername() + "/Sent.txt";
+                FileUpdate.deleteConversation(new File(path), message.getConversation());
+                break;
+
+            case deleteMessage:
+                path = DB + message.getSender().getUsername() + "/Inbox.txt";
+                FileUpdate.deleteMessage(new File(path), message.getConversation(), message.getEmail());
+                path = DB + message.getSender().getUsername() + "/Sent.txt";
+                FileUpdate.deleteMessage(new File(path), message.getConversation(), message.getEmail());
+                break;
         }
         outputStream.flush();
         close();
     }
 
-    void handle (Conversation conversation) throws IOException, ClassNotFoundException {
+    private void handle(Conversation conversation) throws IOException, ClassNotFoundException {
         int convoSize = conversation.getMessages().size();
         Email email = conversation.getMessages().get(convoSize - 1);
         String receiver = email.getReceiver();
@@ -136,22 +92,22 @@ public class ServerHandler {
         if (receiverFile.exists()) {
             receiverFile = new File(DB + receiver + "/Inbox.txt");
             FileUpdate.updateMail(receiverFile, conversation);
-            if (convoSize != 1) {
+            if (convoSize > 1) {
                 List<Email> messages = conversation.getMessages();
-                boolean recieverSentUpdated = false;
+                boolean receiverSentUpdated = false;
                 boolean senderInboxUpdated = false;
                 for (Email e : messages) {
-                    if (!recieverSentUpdated && receiver.equals(e.getSender().getUsername())) {
+                    if (!receiverSentUpdated && receiver.equals(e.getSender().getUsername())) {
                         receiverFile = new File(DB + receiver + "/Sent.txt");
                         FileUpdate.updateMail(receiverFile, conversation);
-                        recieverSentUpdated = true;
+                        receiverSentUpdated = true;
                     }
                     if (!senderInboxUpdated && sender.equals(e.getReceiver())) {
                         File senderFile = new File(DB + sender + "/Inbox.txt");
                         FileUpdate.updateMail(senderFile, conversation);
                         senderInboxUpdated = true;
                     }
-                    if (recieverSentUpdated && senderInboxUpdated)
+                    if (receiverSentUpdated && senderInboxUpdated)
                         break;
                 }
             }

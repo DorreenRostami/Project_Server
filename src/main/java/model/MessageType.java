@@ -26,5 +26,21 @@ public enum MessageType implements Serializable {
     /**
      * when user wants to view the messages they have sent
      */
-    sent
+    sent,
+    /**
+     * when user wants to change their account information
+     */
+    change,
+    /**
+     * when user wants to send an email
+     */
+    send,
+    /**
+     * when user wants to delete a conversation
+     */
+    deleteConversation,
+    /**
+     * when user wants to delete a message
+     */
+    deleteMessage
 }
