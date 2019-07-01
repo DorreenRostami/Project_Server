@@ -64,7 +64,7 @@ public class FileUpdate {
         }
     }
 
-    public static void updateMail(File file, Conversation conversation) throws IOException, ClassNotFoundException {
+    public static void addConvToMail(File file, Conversation conversation) throws IOException, ClassNotFoundException {
         List<Conversation> conversations = new ArrayList<>();
         ObjectOutputStream oos;
         ObjectInputStream ois;
@@ -89,5 +89,24 @@ public class FileUpdate {
         oos.writeObject(conversations);
         oos.flush();
         oos.close();
+    }
+
+    public static void updateMail(File file, List<Conversation> list) throws IOException, ClassNotFoundException {
+        if (file.exists()) {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+            List<Conversation> conversations = (List<Conversation>) ois.readObject();
+            ois.close();
+            for (int i = 0; i < conversations.size(); i++) {
+                for (Conversation l : list) {
+                    if (conversations.get(i).equals(l)) {
+                        conversations.set(i, l);
+                    }
+                }
+            }
+            oos.writeObject(conversations);
+            oos.flush();
+            oos.close();
+        }
     }
 }

@@ -8,9 +8,11 @@ public enum MessageType implements Serializable {
      */
     signIn,
     /**
-     * when user signs out
+     * when user signs out and the changes made to the lists like
+     * marking as important or unread should be saved in the server database
      */
-    signOut,
+    updateInbox,
+    updateSent,
     /**
      * when user creates a new account
      */

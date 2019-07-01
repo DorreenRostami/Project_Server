@@ -41,8 +41,9 @@ public class Conversation extends Message implements Serializable {
      * equals method to check if two conversations are equal.
      * since two emails are equal if and only if their sender and time sent are the same,
      * and since a conversation is created when the first email is sent, if the first
-     * emails in two conversations are equal, we come to the conclusion that the
-     * two conversations are equal.
+     * emails in two conversations are equal, we come to the conclusion that the two
+     * conversations are equal / if the user has deleted the first message, it will
+     * check the equivalence of the last messages sent in the conversation.
      * @param o another object which will be either equal or not to this conversation
      * @return true if the first email in two conversations are equal
      * @see Email#equals(Object)
@@ -52,7 +53,8 @@ public class Conversation extends Message implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Conversation c = (Conversation) o;
-        return this.getMessages().get(0).equals(c.getMessages().get(0));
+        return (messages.get(0).equals(c.getMessages().get(0)) ||
+                messages.get(messages.size() - 1).equals(c.getMessages().get(c.getMessages().size() - 1)));
     }
 
     @Override
