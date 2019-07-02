@@ -1,5 +1,3 @@
-import model.Conversation;
-import model.Email;
 import model.ServerMessage;
 
 import java.io.*;
