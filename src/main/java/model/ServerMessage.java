@@ -8,7 +8,6 @@ public class ServerMessage extends Message implements Serializable {
 
     private MessageType messageType;
     private Conversation conversation;
-    private Email email;
     private List<Conversation> conversations;
 
     ServerMessage(MessageType messageType, User sender) { //for completing sign up (additional info) & signing in & getting lists
@@ -16,20 +15,15 @@ public class ServerMessage extends Message implements Serializable {
         this.sender = sender;
     }
 
-    ServerMessage(MessageType messageType, User sender, String pass2) { //for signing up and changing
+    ServerMessage(MessageType messageType, User sender, String pass2) { //for signing up and changing account info
         this(messageType, sender);
         this.text = pass2;
     }
 
-    ServerMessage(MessageType messageType, Conversation conversation) { //for sending mail & deleting conversation
+    ServerMessage(MessageType messageType, Conversation conversation) { //for sending mail
         this.messageType = messageType;
         this.conversation = conversation;
 //        this.sender = currentUser.user;
-    }
-
-    ServerMessage(MessageType messageType, Conversation conversation, Email email) { //for deleting a message
-        this(messageType, conversation);
-        this.email = email;
     }
 
     ServerMessage(MessageType messageType, List<Conversation> conversations) { //for saving list changes
@@ -44,10 +38,6 @@ public class ServerMessage extends Message implements Serializable {
 
     public Conversation getConversation() {
         return conversation;
-    }
-
-    public Email getEmail() {
-        return email;
     }
 
     public List<Conversation> getConversations() {

@@ -39,11 +39,11 @@ public class Conversation extends Message implements Serializable {
 
     /**
      * equals method to check if two conversations are equal.
-     * since two emails are equal if and only if their sender and time sent are the same,
-     * and since a conversation is created when the first email is sent, if the first
+     * since two emails are equal if and only if their sender and time getSent are the same,
+     * and since a conversation is created when the first email is getSent, if the first
      * emails in two conversations are equal, we come to the conclusion that the two
      * conversations are equal / if the user has deleted the first message, it will
-     * check the equivalence of the last messages sent in the conversation.
+     * check the equivalence of the last messages getSent in the conversation.
      * @param o another object which will be either equal or not to this conversation
      * @return true if the first email in two conversations are equal
      * @see Email#equals(Object)

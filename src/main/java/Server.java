@@ -1,11 +1,10 @@
+import model.Conversation;
+import model.Email;
 import model.ServerMessage;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Server implements Runnable {
 
@@ -13,15 +12,6 @@ public class Server implements Runnable {
     private static ServerSocket serverSocket;
 
     public static void main(String[] args) {
-        // Creating a Stream of Integers
-        Stream<Integer> stream = Stream.of(-2, -1, 1, -2, 0, 1, 2);
-
-        // Using Stream.collect() to collect the
-        // elements of stream in a container.
-        Set<Integer> streamSet = stream.collect(Collectors.toSet());
-
-        // Displaying the elements
-        streamSet.forEach(System.out::println);
         Server.start();
     }
 

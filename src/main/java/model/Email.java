@@ -12,7 +12,7 @@ public class Email extends Message implements Serializable {
     private String time;
     private String subject = "No Subject";
     private List<FileInfo> filesInfos = null;
-    private boolean read = false;
+    private boolean read = true;
     private boolean imp = false;
 
     public Email(User sender, String receiver, String subject, String text, List<FileInfo> filesInfos) {

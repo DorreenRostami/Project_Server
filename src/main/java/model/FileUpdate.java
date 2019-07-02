@@ -33,37 +33,6 @@ public class FileUpdate {
         return list;
     }
 
-    public static void deleteConversation(File file, Conversation conversation) throws IOException, ClassNotFoundException {
-        if (file.exists()) {
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-            List<Conversation> conversations = (List<Conversation>) ois.readObject();
-            ois.close();
-            conversations.remove(conversation);
-            oos.writeObject(conversations);
-            oos.flush();
-            oos.close();
-        }
-    }
-
-    public static void deleteMessage(File file, Conversation conversation, Email email) throws IOException, ClassNotFoundException {
-        if (file.exists()) {
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-            List<Conversation> conversations = (List<Conversation>) ois.readObject();
-            ois.close();
-            for (int i = 0; i < conversations.size(); i++) {
-                if (conversations.get(i).equals(conversation)) {
-                    conversations.get(i).getMessages().remove(email);
-                    break;
-                }
-            }
-            oos.writeObject(conversations);
-            oos.flush();
-            oos.close();
-        }
-    }
-
     public static void addConvToMail(File file, Conversation conversation) throws IOException, ClassNotFoundException {
         List<Conversation> conversations = new ArrayList<>();
         ObjectOutputStream oos;
@@ -91,20 +60,10 @@ public class FileUpdate {
         oos.close();
     }
 
-    public static void updateMail(File file, List<Conversation> list) throws IOException, ClassNotFoundException {
+    public static void updateMail(File file, List<Conversation> list) throws IOException {
         if (file.exists()) {
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-            List<Conversation> conversations = (List<Conversation>) ois.readObject();
-            ois.close();
-            for (int i = 0; i < conversations.size(); i++) {
-                for (Conversation l : list) {
-                    if (conversations.get(i).equals(l)) {
-                        conversations.set(i, l);
-                    }
-                }
-            }
-            oos.writeObject(conversations);
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
+            oos.writeObject(list);
             oos.flush();
             oos.close();
         }

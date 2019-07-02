@@ -3,6 +3,7 @@ import model.*;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Collections;
 import java.util.List;
 
 public class ServerHandler {
@@ -51,12 +52,12 @@ public class ServerHandler {
                 FileUpdate.saveUser(message.getSender());
                 break;
 
-            case inbox:
-            case sent:
+            case getInbox:
+            case getSent:
                 outputStream.writeObject(FileUpdate.getMail(message));
                 break;
 
-            case change:
+            case changeInfo:
                 new InfoChecker(outputStream).changeInfo(message);
                 break;
 
@@ -64,21 +65,8 @@ public class ServerHandler {
                 handleSending(message.getConversation());
                 break;
 
-            case deleteConversation:
-                String path = DB + message.getSender().getUsername() + "/Inbox.txt";
-                FileUpdate.deleteConversation(new File(path), message.getConversation());
-                path = DB + message.getSender().getUsername() + "/Sent.txt";
-                FileUpdate.deleteConversation(new File(path), message.getConversation());
-                break;
-
-            case deleteMessage:
-                path = DB + message.getSender().getUsername() + "/Inbox.txt";
-                FileUpdate.deleteMessage(new File(path), message.getConversation(), message.getEmail());
-                path = DB + message.getSender().getUsername() + "/Sent.txt";
-                FileUpdate.deleteMessage(new File(path), message.getConversation(), message.getEmail());
-                break;
             case updateInbox:
-                path = DB + message.getSender().getUsername() + "/Inbox.txt";
+                String path = DB + message.getSender().getUsername() + "/Inbox.txt";
                 FileUpdate.updateMail(new File(path), message.getConversations());
                 break;
             case updateSent:
@@ -90,38 +78,46 @@ public class ServerHandler {
     }
 
     private void handleSending(Conversation conversation) throws IOException, ClassNotFoundException {
-        int convoSize = conversation.getMessages().size();
-        Email email = conversation.getMessages().get(convoSize - 1);
-        String receiver = email.getReceiver();
-        String sender = email.getSender().getUsername();
+        List<Email> messages = conversation.getMessages();
+
+        Conversation receiverConv = new Conversation(messages.get(0));
+        for (int i = 1 ; i < messages.size(); i++)
+            receiverConv.addMessage(messages.get(i));
+        for (Email email : receiverConv.getMessages())
+            email.setRead(false);
+
+        String sender = messages.get(messages.size() - 1).getSender().getUsername();
+        String receiver = "";
+        for (Email email : messages) {
+            if (!email.getSender().getUsername().equals(sender))
+                receiver = email.getSender().getUsername();
+        }
 
         File receiverFile = new File(DB + receiver);
         if (receiverFile.exists()) {
             receiverFile = new File(DB + receiver + "/Inbox.txt");
-            FileUpdate.addConvToMail(receiverFile, conversation);
-            if (convoSize > 1) {
-                List<Email> messages = conversation.getMessages();
-                boolean receiverSentUpdated = false;
-                boolean senderInboxUpdated = false;
-                for (Email e : messages) {
-                    if (!receiverSentUpdated && receiver.equals(e.getSender().getUsername())) {
-                        receiverFile = new File(DB + receiver + "/Sent.txt");
-                        FileUpdate.addConvToMail(receiverFile, conversation);
-                        receiverSentUpdated = true;
-                    }
-                    if (!senderInboxUpdated && sender.equals(e.getReceiver())) {
-                        File senderFile = new File(DB + sender + "/Inbox.txt");
-                        FileUpdate.addConvToMail(senderFile, conversation);
-                        senderInboxUpdated = true;
-                    }
-                    if (receiverSentUpdated && senderInboxUpdated)
-                        break;
+            FileUpdate.addConvToMail(receiverFile, receiverConv);
+
+            boolean receiverSentUpdated = false;
+            boolean senderInboxUpdated = false;
+            for (Email e : messages) {
+                if (!receiverSentUpdated && receiver.equals(e.getSender().getUsername())) {
+                    receiverFile = new File(DB + receiver + "/Sent.txt");
+                    FileUpdate.addConvToMail(receiverFile, receiverConv);
+                    receiverSentUpdated = true;
                 }
+                if (!senderInboxUpdated && sender.equals(e.getReceiver())) {
+                    File senderFile = new File(DB + sender + "/Inbox.txt");
+                    FileUpdate.addConvToMail(senderFile, conversation);
+                    senderInboxUpdated = true;
+                }
+                if (receiverSentUpdated && senderInboxUpdated)
+                    break;
             }
         }
         else {
             File senderFile = new File(DB + sender + "/Inbox.txt");
-            email = new Email(new User("mailerdaemon", ""), sender, "Error sending email",
+            Email email = new Email(new User("mailerdaemon", ""), sender, "Error sending email",
                     "User " + receiver +"@googlemail.com doesn't exist", null);
             FileUpdate.addConvToMail(senderFile, new Conversation(email));
         }

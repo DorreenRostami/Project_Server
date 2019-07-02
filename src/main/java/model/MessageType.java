@@ -8,12 +8,6 @@ public enum MessageType implements Serializable {
      */
     signIn,
     /**
-     * when user signs out and the changes made to the lists like
-     * marking as important or unread should be saved in the server database
-     */
-    updateInbox,
-    updateSent,
-    /**
      * when user creates a new account
      */
     signUp,
@@ -22,27 +16,24 @@ public enum MessageType implements Serializable {
      */
     makeAccount,
     /**
-     * when user wants to view their inbox
+     * when user wants to view their updated inbox list
      */
-    inbox,
+    getInbox,
     /**
-     * when user wants to view the messages they have sent
+     * when user wants to view their updated sent list
      */
-    sent,
+    getSent,
     /**
      * when user wants to change their account information
      */
-    change,
+    changeInfo,
     /**
      * when user wants to send an email
      */
     send,
     /**
-     * when user wants to delete a conversation
+     * when changes have been made to a list
      */
-    deleteConversation,
-    /**
-     * when user wants to delete a message
-     */
-    deleteMessage
+    updateInbox,
+    updateSent
 }
