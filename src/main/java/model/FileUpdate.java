@@ -43,19 +43,17 @@ public class FileUpdate {
     }
 
     public static void addConvToMail(File file, Conversation conversation) throws IOException, ClassNotFoundException {
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));
-
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
         List<Conversation> conversations = (List<Conversation>) ois.readObject();
+        int convSize = conversations.size();
         ois.close();
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
 
-        if (conversations.size() == 0) {
-            oos = new ObjectOutputStream(new FileOutputStream(file));
-            conversations = new ArrayList<>();
+        if (convSize == 0) {
             conversations.add(conversation);
         }
         else {
-            for (int i = 0; i < conversations.size(); i++) {
+            for (int i = 0; i < convSize; i++) {
                 if (conversation.equals(conversations.get(i))) {
                     conversations.set(i, conversation);
                     break;
@@ -77,17 +75,12 @@ public class FileUpdate {
     }
 
     public static void handleBlock(MessageType messageType, File file, String blockedUser) throws IOException, ClassNotFoundException {
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));
-
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
         List<String> blockedUsers = (List<String>) ois.readObject();
         ois.close();
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
 
         if (messageType == MessageType.block) {
-            if (blockedUsers.size() == 0) {
-                oos = new ObjectOutputStream(new FileOutputStream(file));
-                blockedUsers = new ArrayList<>();
-            }
             blockedUsers.add(blockedUser);
         }
         else

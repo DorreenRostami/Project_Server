@@ -90,7 +90,8 @@ public class ServerHandler {
     private void handleSending(Conversation conversation) throws IOException, ClassNotFoundException {
         List<Email> messages = conversation.getMessages();
 
-        Conversation receiverConv = new Conversation(messages.get(0));
+        Conversation receiverConv = new Conversation(new Email(messages.get(0).getSender(), messages.get(0).getReceiver(),
+                messages.get(0).getSubject(), messages.get(0).getText(), messages.get(0).getFilesInfos()));
         for (int i = 1 ; i < messages.size(); i++) {
             receiverConv.addMessage(new Email(messages.get(i).getSender(), messages.get(i).getReceiver(),
                     messages.get(i).getSubject(), messages.get(i).getText(), messages.get(i).getFilesInfos()));

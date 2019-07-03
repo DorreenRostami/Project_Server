@@ -4,6 +4,7 @@ import model.ServerMessage;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
 public class Server implements Runnable {
 
@@ -11,10 +12,20 @@ public class Server implements Runnable {
     private static ServerSocket serverSocket;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
+        /*String path = "src/main/resources/users/a/inbox.txt";
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream(path));
+        List<Conversation> inbox = (List<Conversation>) in.readObject();
+        System.out.println(inbox.size());
+//        System.out.println(inbox.get(0).getMessages().size());
+        path = "src/main/resources/users/a/sent.txt";
+        in = new ObjectInputStream(new FileInputStream(path));
+        List<Conversation> sent = (List<Conversation>) in.readObject();
+        System.out.println(sent.size());
+//        System.out.println(sent.get(0).getMessages().size());*/
         Server.start();
     }
 
-    public static void start() {
+    private static void start() {
         try {
             serverSocket = new ServerSocket(requestPort);
             Thread serverThread = new Thread(new Server(), "Server Thread");
@@ -40,7 +51,7 @@ class ServerRunner implements Runnable {
     private Socket socket;
     private ServerHandler serverHandler;
 
-    public ServerRunner(Socket serverSocket) {
+    ServerRunner(Socket serverSocket) {
         this.socket = serverSocket;
     }
 
