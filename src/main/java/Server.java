@@ -1,3 +1,4 @@
+import model.Conversation;
 import model.ServerMessage;
 
 import java.io.*;
@@ -9,7 +10,7 @@ public class Server implements Runnable {
     private static final int requestPort = 8080;
     private static ServerSocket serverSocket;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         Server.start();
     }
 
@@ -53,7 +54,7 @@ class ServerRunner implements Runnable {
 
             clientRequest = serverHandler.getInputStream().readObject();
             if (clientRequest instanceof ServerMessage) {
-                serverHandler.handleSending((ServerMessage) clientRequest);
+                serverHandler.handle((ServerMessage) clientRequest);
             }
         }
         catch (IOException | ClassNotFoundException ignored) {

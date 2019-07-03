@@ -15,9 +15,16 @@ public class ServerMessage extends Message implements Serializable {
         this.sender = sender;
     }
 
-    ServerMessage(MessageType messageType, User sender, String pass2) { //for signing up and changing account info
+    /**
+     * for signing up / changing account info / blocking
+     *
+     * @param messageType signUp / changeInfo/ block or unblock
+     * @param sender      the current user
+     * @param text        either the second password or the username of the user being blocked/unblocked
+     */
+    ServerMessage(MessageType messageType, User sender, String text) {
         this(messageType, sender);
-        this.text = pass2;
+        this.text = text;
     }
 
     ServerMessage(MessageType messageType, Conversation conversation) { //for sending mail

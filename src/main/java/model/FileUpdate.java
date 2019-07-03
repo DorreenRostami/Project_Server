@@ -11,22 +11,24 @@ public class FileUpdate {
         String path = DB + user.getUsername();
         File dir = new File(path);
 
-        //make user directory if user is new
-        if(!dir.mkdir()) {
-            ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(path + "/Inbox.txt"));
-            ous.writeObject(new ArrayList<Conversation>());
-            ous.flush();
-            ous = new ObjectOutputStream(new FileOutputStream(path + "/Sent.txt"));
-            ous.writeObject(new ArrayList<Conversation>());
-            ous.flush();
-            ous = new ObjectOutputStream(new FileOutputStream(path + "/Blocked.txt"));
-            ous.writeObject(new ArrayList<String>());
-            ous.flush();
-            ous.close();
+        //make other files is user is new
+        if (dir.mkdir()) {
+            ObjectOutputStream o1 = new ObjectOutputStream(new FileOutputStream(path + "/inbox.txt"));
+            o1.writeObject(new ArrayList<Conversation>());
+            o1.flush();
+            o1.close();
+            ObjectOutputStream o2 = new ObjectOutputStream(new FileOutputStream(path + "/sent.txt"));
+            o2.writeObject(new ArrayList<Conversation>());
+            o2.flush();
+            o2.close();
+            ObjectOutputStream o3 = new ObjectOutputStream(new FileOutputStream(path + "/blocked.txt"));
+            o3.writeObject(new ArrayList<String>());
+            o3.flush();
+            o3.close();
         }
 
         //serialize updated user into file
-        ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(path + "/Info.txt"));
+        ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(path + "/info.txt"));
         ous.writeObject(user);
         ous.flush();
         ous.close();
@@ -41,13 +43,15 @@ public class FileUpdate {
     }
 
     public static void addConvToMail(File file, Conversation conversation) throws IOException, ClassNotFoundException {
-        ObjectOutputStream oos;
-        ObjectInputStream ois;
-        oos = new ObjectOutputStream(new FileOutputStream(file, true));
-        ois = new ObjectInputStream(new FileInputStream(file));
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));
+
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
         List<Conversation> conversations = (List<Conversation>) ois.readObject();
         ois.close();
+
         if (conversations.size() == 0) {
+            oos = new ObjectOutputStream(new FileOutputStream(file));
+            conversations = new ArrayList<>();
             conversations.add(conversation);
         }
         else {
@@ -71,4 +75,28 @@ public class FileUpdate {
         oos.flush();
         oos.close();
     }
+
+    public static void handleBlock(MessageType messageType, File file, String blockedUser) throws IOException, ClassNotFoundException {
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));
+
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+        List<String> blockedUsers = (List<String>) ois.readObject();
+        ois.close();
+
+        if (messageType == MessageType.block) {
+            if (blockedUsers.size() == 0) {
+                oos = new ObjectOutputStream(new FileOutputStream(file));
+                blockedUsers = new ArrayList<>();
+            }
+            blockedUsers.add(blockedUser);
+        }
+        else
+            blockedUsers.remove(blockedUser);
+
+        oos.writeObject(blockedUsers);
+        oos.flush();
+        oos.close();
+    }
+
+
 }

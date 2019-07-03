@@ -18,11 +18,11 @@ public enum MessageType implements Serializable {
     /**
      * when user wants to view their updated inbox list
      */
-    getInbox,
+    inbox,
     /**
      * when user wants to view their updated sent list
      */
-    getSent,
+    sent,
     /**
      * when user wants to change their account information
      */
@@ -35,5 +35,10 @@ public enum MessageType implements Serializable {
      * when changes have been made to a list
      */
     updateInbox,
-    updateSent
+    updateSent,
+    /**
+     * when user has blocked/unblocked another user
+     */
+    block,
+    unblock
 }

@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serializable;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class User implements Serializable, Person {
@@ -18,7 +19,7 @@ public class User implements Serializable, Person {
     private String mobile;
 
     //messaging info
-    private List<User> blockedUsers = null;
+    private transient List<String> blockedUsers = new ArrayList<>();
 
     public User(String username, String password) {
         this.username = username;
@@ -104,6 +105,14 @@ public class User implements Serializable, Person {
 
     public void setImage(byte[] image) {
         this.image = image;
+    }
+
+    public List<String> getBlockedUsers() {
+        return blockedUsers;
+    }
+
+    public void setBlockedUsers(List<String> blockedUsers) {
+        this.blockedUsers = blockedUsers;
     }
 
     @Override
