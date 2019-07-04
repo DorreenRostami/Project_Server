@@ -66,8 +66,11 @@ public class InfoChecker {
     public void changeInfo(ServerMessage message) throws IOException {
         User newUser = message.getSender();
         checkName(newUser.getName(), newUser.getSurname());
-        if (message.getText().length() > 0)
-            checkPass(newUser.getPassword(), message.getText());
+        if (message.getText().length() > 0 && message.getText().contains("changed")) {
+            int i = message.getText().indexOf("-");
+            String pass2 = message.getText().substring(++i);
+            checkPass(newUser.getPassword(), pass2);
+        }
         if (!error) {
             outputStream.writeObject(InfoFeedback.changed);
             FileUpdate.saveUser(message.getSender());

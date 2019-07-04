@@ -1,7 +1,6 @@
 package model;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +18,14 @@ public class User implements Serializable, Person {
     private String mobile;
 
     //messaging info
-    private transient List<String> blockedUsers = new ArrayList<>();
+    private List<String> blockedUsers = new ArrayList<>();
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public User(String name, String surname, String birthday, String username, String password) throws ParseException {
+    public User(String name, String surname, String birthday, String username, String password) {
         this(username, password);
         this.name = name;
         this.surname = surname;

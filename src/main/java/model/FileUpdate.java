@@ -54,7 +54,8 @@ public class FileUpdate {
         }
         else {
             for (int i = 0; i < convSize; i++) {
-                if (conversation.equals(conversations.get(i))) {
+                Conversation c = conversations.get(i);
+                if (conversation.equals(c)) {
                     conversations.set(i, conversation);
                     break;
                 }
@@ -90,6 +91,4 @@ public class FileUpdate {
         oos.flush();
         oos.close();
     }
-
-
 }

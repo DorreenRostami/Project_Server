@@ -1,27 +1,15 @@
-import model.Conversation;
 import model.ServerMessage;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 
 public class Server implements Runnable {
 
     private static final int requestPort = 8080;
     private static ServerSocket serverSocket;
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        /*String path = "src/main/resources/users/a/inbox.txt";
-        ObjectInputStream in = new ObjectInputStream(new FileInputStream(path));
-        List<Conversation> inbox = (List<Conversation>) in.readObject();
-        System.out.println(inbox.size());
-//        System.out.println(inbox.get(0).getMessages().size());
-        path = "src/main/resources/users/a/sent.txt";
-        in = new ObjectInputStream(new FileInputStream(path));
-        List<Conversation> sent = (List<Conversation>) in.readObject();
-        System.out.println(sent.size());
-//        System.out.println(sent.get(0).getMessages().size());*/
+    public static void main(String[] args) {
         Server.start();
     }
 

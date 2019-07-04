@@ -59,6 +59,6 @@ public class Conversation extends Message implements Serializable {
 
     @Override
     public int hashCode() {
-        return sender.hashCode() + messages.hashCode();
+        return sender.hashCode();
     }
 }

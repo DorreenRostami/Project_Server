@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class FileInfo {
+public class FileInfo implements Serializable {
     private byte[] fileBytes;
     private String fileName;
 

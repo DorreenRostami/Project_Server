@@ -2,6 +2,8 @@ import model.*;
 
 import java.io.*;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class ServerHandler {
@@ -44,6 +46,11 @@ public class ServerHandler {
                     file = new File(accountPath + "/info.txt");
                     ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
                     User user = (User) ois.readObject();
+
+                    if (!user.getPassword().equals(newUser.getPassword())) {
+                        outputStream.writeObject(null);
+                        break;
+                    }
 
                     file = new File(accountPath + "/blocked.txt");
                     ois = new ObjectInputStream(new FileInputStream(file));
@@ -91,10 +98,10 @@ public class ServerHandler {
         List<Email> messages = conversation.getMessages();
 
         Conversation receiverConv = new Conversation(new Email(messages.get(0).getSender(), messages.get(0).getReceiver(),
-                messages.get(0).getSubject(), messages.get(0).getText(), messages.get(0).getFilesInfos()));
+                messages.get(0).getSubject(), messages.get(0).getText(), messages.get(0).getFilesInfos(), messages.get(0).getTime()));
         for (int i = 1 ; i < messages.size(); i++) {
             receiverConv.addMessage(new Email(messages.get(i).getSender(), messages.get(i).getReceiver(),
-                    messages.get(i).getSubject(), messages.get(i).getText(), messages.get(i).getFilesInfos()));
+                    messages.get(i).getSubject(), messages.get(i).getText(), messages.get(i).getFilesInfos(), messages.get(i).getTime()));
         }
         for (Email email : receiverConv.getMessages())
             email.setRead(false);
@@ -140,8 +147,9 @@ public class ServerHandler {
         }
         else {
             File senderFile = new File(DB + sender + "/inbox.txt");
+            String time = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date());;
             Email email = new Email(new User("mailerdaemon", ""), sender, "Error sending email",
-                    "User " + receiver +"@googlemail.com doesn't exist", null);
+                    "User " + receiver +"@googlemail.com doesn't exist", null, time);
             FileUpdate.addConvToMail(senderFile, new Conversation(email));
         }
 
