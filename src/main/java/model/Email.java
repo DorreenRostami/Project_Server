@@ -1,6 +1,8 @@
 package model;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class Email extends Message implements Serializable {
@@ -13,7 +15,7 @@ public class Email extends Message implements Serializable {
     private boolean read = true;
     private boolean imp = false;
 
-    public Email(User sender, String receiver, String subject, String text, List<FileInfo> filesInfos, String time) {
+    public Email(User sender, String receiver, String subject, String text, List<FileInfo> filesInfos) {
         this.sender = sender;
         this.text = text;
         this.receiver = receiver;
@@ -21,6 +23,11 @@ public class Email extends Message implements Serializable {
             this.subject = subject;
         if (filesInfos != null && filesInfos.size() > 0)
             this.filesInfos = filesInfos;
+        this.time = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date());
+    }
+
+    public Email(User sender, String receiver, String subject, String text, List<FileInfo> filesInfos, String time) {
+        this(sender, receiver, subject, text, filesInfos);
         this.time = time;
     }
 

@@ -15,7 +15,7 @@ public class Server implements Runnable {
         Server.start();
     }
 
-    private static void start() {
+    public static void start() {
         try {
             serverSocket = new ServerSocket(requestPort);
             Thread serverThread = new Thread(new Server(), "Server Thread");
@@ -38,6 +38,7 @@ public class Server implements Runnable {
 }
 
 class ServerRunner implements Runnable {
+    public static final Object threadCondition = new Object();
     private Socket socket;
     private ServerHandler serverHandler;
 
@@ -66,6 +67,9 @@ class ServerRunner implements Runnable {
 
     private void userDisconnect() {
         try {
+            synchronized (threadCondition) {
+                threadCondition.notify();
+            }
             serverHandler.getOutputStream().close();
             serverHandler.getInputStream().close();
             socket.close();

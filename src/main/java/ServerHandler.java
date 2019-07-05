@@ -220,6 +220,7 @@ public class ServerHandler {
             File blockedUsersFile = new File(DB + receiver + "/blocked.txt");
             ObjectInputStream blockedUsersIn = new ObjectInputStream(new FileInputStream(blockedUsersFile));
             List<String> blockedUsers = (List<String>) blockedUsersIn.readObject();
+            blockedUsersIn.close();
             for (String user : blockedUsers) {
                 if (user.equals(sender)) {
                     blocked = true;

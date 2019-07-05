@@ -102,7 +102,6 @@ public class Connection {
     /**
      * sends the conversation which contains the new email to the server.
      * @param conversation the conversation containing the new email
-     * @return void
      */
     public void sendMail(Conversation conversation) {
         try {
