@@ -27,11 +27,14 @@ public class TestServer {
         connection = new Connection();
         connection.signUpConnection(user1, "123456aA");
         user1.setImage(data);
+        user1.setGender(Gender.Female);
+        user1.setMobile("1234567890");
         connection = new Connection();
         connection.signUpConnection(user1);
         connection = new Connection();
         connection.signUpConnection(user2, "123456aA");
         user2.setImage(data);
+        user2.setGender(Gender.Male);
         connection = new Connection();
         connection.signUpConnection(user2);
     }
@@ -88,10 +91,12 @@ public class TestServer {
         connection = new Connection();
         List<Conversation> list = connection.getList(MessageType.sent);
         assertTrue(list.contains(new Conversation(email)));
+
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DB + "test1/sent.txt"));
         List<Conversation> list1 = (List<Conversation>) ois.readObject();
         ois.close();
         assertTrue(list1.contains(new Conversation(email)));
+
         ois = new ObjectInputStream(new FileInputStream(DB + "test2/inbox.txt"));
         List<Conversation> list2 = (List<Conversation>) ois.readObject();
         ois.close();
