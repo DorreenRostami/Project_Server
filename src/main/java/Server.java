@@ -3,13 +3,15 @@ import model.ServerMessage;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Server implements Runnable {
 
     private static final int requestPort = 8080;
     private static ServerSocket serverSocket;
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         Server.start();
     }
 
@@ -45,16 +47,15 @@ class ServerRunner implements Runnable {
 
     @Override
     public void run() {
-        Object clientRequest;
         try {
             serverHandler = new ServerHandler(socket,
                     new ObjectOutputStream(socket.getOutputStream()),
                     new ObjectInputStream(socket.getInputStream()));
 
-            clientRequest = serverHandler.getInputStream().readObject();
-            if (clientRequest instanceof ServerMessage) {
-                serverHandler.handle((ServerMessage) clientRequest);
-            }
+            ServerMessage clientRequest = (ServerMessage) serverHandler.getInputStream().readObject();
+            System.out.println(clientRequest.getSender().getUsername() + " connect");
+            System.out.println(new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date()));
+            serverHandler.handle(clientRequest);
         }
         catch (IOException | ClassNotFoundException ignored) {
         }

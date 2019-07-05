@@ -1,7 +1,11 @@
 package model;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class FileUpdate {
@@ -25,7 +29,15 @@ public class FileUpdate {
             o3.writeObject(new ArrayList<String>());
             o3.flush();
             o3.close();
+
+            System.out.println(user.getUsername() + " register " + path + "/picture.png");
+            System.out.println(new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date()));
         }
+
+        //save image to user's directory
+        ByteArrayInputStream bis = new ByteArrayInputStream(user.getImage());
+        BufferedImage bImage2 = ImageIO.read(bis);
+        ImageIO.write(bImage2, "png", new File(path + "/picture.png") );
 
         //serialize updated user into file
         ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(path + "/info.txt"));
@@ -45,24 +57,10 @@ public class FileUpdate {
     public static void addConvToMail(File file, Conversation conversation) throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
         List<Conversation> conversations = (List<Conversation>) ois.readObject();
-        int convSize = conversations.size();
         ois.close();
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
-
-        if (convSize == 0) {
-            conversations.add(conversation);
-        }
-        else {
-            for (int i = 0; i < convSize; i++) {
-                Conversation c = conversations.get(i);
-                if (conversation.equals(c)) {
-                    conversations.set(i, conversation);
-                    break;
-                }
-                else if (i == conversations.size() - 1)
-                    conversations.add(conversation);
-            }
-        }
+        conversations.remove(conversation);
+        conversations.add(conversation);
         oos.writeObject(conversations);
         oos.flush();
         oos.close();
@@ -75,7 +73,7 @@ public class FileUpdate {
         oos.close();
     }
 
-    public static void handleBlock(MessageType messageType, File file, String blockedUser) throws IOException, ClassNotFoundException {
+    public static void handleBlock(MessageType messageType, File file, String user, String blockedUser) throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
         List<String> blockedUsers = (List<String>) ois.readObject();
         ois.close();
@@ -83,9 +81,13 @@ public class FileUpdate {
 
         if (messageType == MessageType.block) {
             blockedUsers.add(blockedUser);
+            System.out.println(user + " block " + blockedUser);
         }
-        else
+        else {
             blockedUsers.remove(blockedUser);
+            System.out.println(user + " unblock " + blockedUser);
+        }
+        System.out.println(new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date()));
 
         oos.writeObject(blockedUsers);
         oos.flush();

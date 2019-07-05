@@ -10,7 +10,7 @@ public class ServerMessage extends Message implements Serializable {
     private Conversation conversation;
     private List<Conversation> conversations;
 
-    ServerMessage(MessageType messageType, User sender) { //for completing sign up (additional info) & signing in & getting lists
+    public ServerMessage(MessageType messageType, User sender) { //for completing sign up (additional info) & signing in & getting lists
         this.messageType = messageType;
         this.sender = sender;
     }
@@ -22,21 +22,21 @@ public class ServerMessage extends Message implements Serializable {
      * @param sender      the current user
      * @param text        either the second password or the username of the user being blocked/unblocked
      */
-    ServerMessage(MessageType messageType, User sender, String text) {
+    public ServerMessage(MessageType messageType, User sender, String text) {
         this(messageType, sender);
         this.text = text;
     }
 
-    ServerMessage(MessageType messageType, Conversation conversation) { //for sending mail
+    public ServerMessage(MessageType messageType, Conversation conversation, User sender) { //for sending mail
         this.messageType = messageType;
         this.conversation = conversation;
-//        this.sender = currentUser.user;
+        this.sender = sender;
     }
 
-    ServerMessage(MessageType messageType, List<Conversation> conversations) { //for saving list changes
+    public ServerMessage(MessageType messageType, List<Conversation> conversations, User sender) { //for saving list changes
         this.messageType = messageType;
         this.conversations = conversations;
-//        this.sender = currentUser.user;
+        this.sender = sender;
     }
 
     public MessageType getMessageType() {
